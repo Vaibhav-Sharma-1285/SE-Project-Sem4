@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block content %}
+
+{% if session.role == 'ADMIN' %}
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="stat-ico">👥</div>
+    <div class="stat-val">{{ data.total_users }}</div>
+    <div class="stat-lbl">Total Users</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-ico">📚</div>
+    <div class="stat-val">{{ data.total_courses }}</div>
+    <div class="stat-lbl">Courses</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-ico">🎓</div>
+    <div class="stat-val">{{ data.total_students }}</div>
+    <div class="stat-lbl">Students</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-ico">🧑‍🏫</div>
+    <div class="stat-val">{{ data.total_faculty }}</div>
+    <div class="stat-lbl">Faculty Members</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-ico">📝</div>
+    <div class="stat-val" style="color:var(--yellow)">{{ data.pending_leaves }}</div>
+    <div class="stat-lbl">Pending Leaves</div>
+  </div>
+</div>
+<div class="grid-2">
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Recent Activity</span>
+      <a href="{{ url_for('audit_logs') }}" class="btn btn-ghost btn-sm">View All</a>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>User</th><th>Action</th><th>Time</th></tr></thead>
+        <tbody>
+        {% for log in data.recent_logs %}
+        <tr>
+          <td>{{ log.full_name or '—' }}</td>
+          <td><code class="tag">{{ log.action }}</code></td>
+          <td class="text-muted">{{ log.timestamp[:16] }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><span class="card-title">Quick Actions</span></div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <a href="{{ url_for('create_user') }}" class="btn btn-primary">👤 Create New User</a>
+      <a href="{{ url_for('create_course') }}" class="btn btn-ghost">📚 Add New Course</a>
+      <a href="{{ url_for('manage_leaves') }}" class="btn btn-ghost">📝 Review Pending Leaves</a>
+      <a href="{{ url_for('reports') }}" class="btn btn-ghost">📊 Generate Report</a>
+      <a href="{{ url_for('audit_logs') }}" class="btn btn-ghost">🔍 View Audit Logs</a>
+    </div>
+  </div>
+</div>
+
+{% elif session.role == 'FACULTY' %}
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="stat-ico">📚</div>
+    <div class="stat-val">{{ data.my_courses|length }}</div>
+    <div class="stat-lbl">My Courses</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-ico">📝</div>
+    <div class="stat-val" style="color:var(--yellow)">{{ data.pending_leaves|length }}</div>
+    <div class="stat-lbl">Pending Leave Requests</div>
+  </div>
+</div>
+<div class="grid-2">
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">My Courses</span>
+      <a href="{{ url_for('mark_attendance') }}" class="btn btn-primary btn-sm">Mark Attendance</a>
+    </div>
+    {% if data.my_courses %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Code</th><th>Course Name</th><th>Credits</th></tr></thead>
+        <tbody>
+        {% for c in data.my_courses %}
+        <tr>
+          <td><code class="tag">{{ c.course_code }}</code></td>
+          <td>{{ c.course_name }}</td>
+          <td>{{ c.credits }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty"><div class="empty-ico">📚</div><p>No courses assigned yet.</p></div>
+    {% endif %}
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Pending Leave Requests</span>
+      {% if data.pending_leaves %}
+      <a href="{{ url_for('manage_leaves') }}" class="btn btn-sm btn-ghost">View All</a>
+      {% endif %}
+    </div>
+    {% if data.pending_leaves %}
+    {% for lv in data.pending_leaves[:5] %}
+    <div style="padding:12px 0;border-bottom:1px solid var(--border2)">
+      <div class="flex justify-between align-center">
+        <span style="font-weight:600;font-size:.875rem">{{ lv.student_name }}</span>
+        <span class="badge badge-pending">PENDING</span>
+      </div>
+      <div class="text-muted mt-1">{{ lv.course_name }} • {{ lv.from_date }} → {{ lv.to_date }}</div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="empty"><div class="empty-ico">✅</div><p>No pending requests. All caught up!</p></div>
+    {% endif %}
+  </div>
+</div>
+
+{% elif session.role == 'STUDENT' %}
+{% set low = namespace(count=0) %}
+{% for a in data.attendance_data %}
+  {% if a.pct is not none and a.pct < 66.67 %}{% set low.count = low.count + 1 %}{% endif %}
+{% endfor %}
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="stat-ico">📚</div>
+    <div class="stat-val">{{ data.attendance_data|length }}</div>
+    <div class="stat-lbl">Enrolled Courses</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-ico">📝</div>
+    <div class="stat-val" style="color:var(--yellow)">{{ data.pending_leaves }}</div>
+    <div class="stat-lbl">Pending Applications</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-ico">⚠️</div>
+    <div class="stat-val" style="color:{% if low.count > 0 %}var(--red){% else %}var(--green){% endif %}">{{ low.count }}</div>
+    <div class="stat-lbl">Low Attendance Courses</div>
+  </div>
+</div>
+{% if low.count > 0 %}
+<div class="alert alert-danger mb-3">⚠️ You have {{ low.count }} course(s) below the 66.67% attendance threshold. You may be at risk of examination ineligibility.</div>
+{% endif %}
+<div class="card">
+  <div class="card-header">
+    <span class="card-title">Attendance Overview</span>
+    <a href="{{ url_for('view_attendance') }}" class="btn btn-ghost btn-sm">View Details</a>
+  </div>
+  {% if data.attendance_data %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Course</th><th>Code</th><th>Held</th><th>Attended</th><th>On Leave</th><th>Percentage</th><th>Status</th></tr></thead>
+      <tbody>
+      {% for a in data.attendance_data %}
+      <tr>
+        <td><strong>{{ a.course.course_name }}</strong></td>
+        <td><code class="tag">{{ a.course.course_code }}</code></td>
+        <td>{{ a.held }}</td>
+        <td>{{ a.attended }}</td>
+        <td>{{ a.leave }}</td>
+        <td>
+          {% if a.pct is none %}<span class="text-muted">N/A</span>
+          {% elif a.pct < 66.67 %}<span class="pct-low">{{ a.pct }}%</span>
+          {% else %}<span class="pct-ok">{{ a.pct }}%</span>{% endif %}
+        </td>
+        <td>
+          {% if a.pct is none %}<span class="badge" style="background:#f1f5f9;color:var(--text3)">N/A</span>
+          {% elif a.pct < 66.67 %}<span class="badge badge-rejected">⚠ At Risk</span>
+          {% else %}<span class="badge badge-approved">✓ Safe</span>{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty"><div class="empty-ico">📊</div><p>No attendance data recorded yet.</p></div>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}
