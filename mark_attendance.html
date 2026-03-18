@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% block title %}Mark Attendance{% endblock %}
+{% block page_title %}Mark Attendance{% endblock %}
+{% block content %}
+<div class="grid-2" style="align-items:start;gap:20px">
+  <!-- Filter Panel -->
+  <div class="card" style="position:sticky;top:0">
+    <div class="card-header"><span class="card-title">Select Course & Date</span></div>
+    <form method="GET">
+      <div class="form-group">
+        <label>Course <span class="req">*</span></label>
+        <select name="course_id" required>
+          <option value="">— Select Course —</option>
+          {% for c in courses %}
+          <option value="{{ c.course_id }}" {% if selected_course == c.course_id|string %}selected{% endif %}>
+            {{ c.course_code }} — {{ c.course_name }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Date <span class="req">*</span></label>
+        <input type="date" name="att_date" value="{{ selected_date }}" required>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%">Load Roster →</button>
+    </form>
+  </div>
+
+  <!-- Roster Panel -->
+  <div>
+  {% if students %}
+  <form method="POST" id="att-form">
+    <input type="hidden" name="course_id" value="{{ selected_course }}">
+    <input type="hidden" name="att_date" value="{{ selected_date }}">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Student Roster — {{ selected_date }}</span>
+        <div class="flex gap-2">
+          <button type="button" class="btn btn-sm btn-ghost" onclick="markAll('PRESENT')">All Present</button>
+          <button type="button" class="btn btn-sm btn-ghost" onclick="markAll('ABSENT')">All Absent</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Roll No</th>
+              <th>Student Name</th>
+              <th>Batch</th>
+              <th>Status <span class="req">*</span></th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for s in students %}
+          <tr>
+            <td class="text-muted">{{ loop.index }}</td>
+            <td><code class="tag">{{ s.username }}</code></td>
+            <td><strong>{{ s.full_name }}</strong></td>
+            <td><span class="text-muted">{{ s.batch or '—' }}</span></td>
+            <td>
+              <input type="hidden" name="student_id" value="{{ s.user_id }}">
+              {% set cur = existing_records.get(s.user_id, '') %}
+              <div class="att-radios">
+                <label class="att-radio">
+                  <input type="radio" name="status_{{ s.user_id }}" value="PRESENT" {% if cur == 'PRESENT' %}checked{% endif %} required>
+                  <span>Present</span>
+                </label>
+                <label class="att-radio">
+                  <input type="radio" name="status_{{ s.user_id }}" value="ABSENT" {% if cur == 'ABSENT' %}checked{% endif %}>
+                  <span>Absent</span>
+                </label>
+                <label class="att-radio">
+                  <input type="radio" name="status_{{ s.user_id }}" value="ON_LEAVE" {% if cur == 'ON_LEAVE' %}checked{% endif %}>
+                  <span>On Leave</span>
+                </label>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div style="padding-top:18px;border-top:1px solid var(--border2);margin-top:14px;display:flex;gap:12px;justify-content:flex-end">
+        <a href="{{ url_for('mark_attendance') }}" class="btn btn-ghost">Reset</a>
+        <button type="submit" class="btn btn-primary">Submit Attendance</button>
+      </div>
+    </div>
+  </form>
+  {% elif selected_course %}
+  <div class="card">
+    <div class="empty"><div class="empty-ico">👥</div><p>No students enrolled in this course yet.</p></div>
+  </div>
+  {% else %}
+  <div class="card">
+    <div class="empty"><div class="empty-ico">📋</div><p>Select a course and date to load the student roster.</p></div>
+  </div>
+  {% endif %}
+  </div>
+</div>
+<script>
+function markAll(status) {
+  document.querySelectorAll(`input[type=radio][value="${status}"]`).forEach(r => r.checked = true);
+}
+document.getElementById('att-form')?.addEventListener('submit', function(e) {
+  document.querySelectorAll('input[name=student_id]').forEach(inp => {
+    const uid = inp.value;
+    const checked = document.querySelector(`input[name=status_${uid}]:checked`);
+    if (checked) {
+      const s = document.createElement('input');
+      s.type='hidden'; s.name='status'; s.value=checked.value;
+      this.appendChild(s);
+    }
+  });
+});
+</script>
+{% endblock %}
