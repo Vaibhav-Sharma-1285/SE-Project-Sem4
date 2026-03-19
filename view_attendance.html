@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block title %}My Attendance{% endblock %}
+{% block page_title %}My Attendance{% endblock %}
+{% block content %}
+<div class="grid-2" style="align-items:start">
+  <div class="card" style="position:sticky;top:0">
+    <div class="card-header"><span class="card-title">Select Course</span></div>
+    <form method="GET">
+      <div class="form-group">
+        <label>Course</label>
+        <select name="course_id">
+          <option value="">— All Courses Overview —</option>
+          {% for c in courses %}
+          <option value="{{ c.course_id }}" {% if selected == c.course_id|string %}selected{% endif %}>
+            {{ c.course_code }} — {{ c.course_name }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%">View →</button>
+    </form>
+    {% if summary %}
+    <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--border2)">
+      <div class="stat-grid" style="grid-template-columns:1fr 1fr">
+        <div class="stat-card">
+          <div class="stat-val">{{ summary.held }}</div>
+          <div class="stat-lbl">Classes Held</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val">{{ summary.attended }}</div>
+          <div class="stat-lbl">Attended</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val">{{ summary.leave }}</div>
+          <div class="stat-lbl">On Leave</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val {% if summary.pct is not none and summary.pct < 66.67 %}pct-low{% elif summary.pct is not none %}pct-ok{% endif %}">
+            {% if summary.pct is none %}N/A{% else %}{{ summary.pct }}%{% endif %}
+          </div>
+          <div class="stat-lbl">Attendance %</div>
+        </div>
+      </div>
+      {% if summary.pct is not none and summary.pct < 66.67 %}
+      <div class="alert alert-danger mt-3">⚠ Your attendance is below the required 66.67% threshold. You may be ineligible for examinations.</div>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <div class="card-header"><span class="card-title">Attendance Records</span></div>
+    {% if records %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Date</th><th>Status</th></tr></thead>
+        <tbody>
+        {% for r in records %}
+        <tr>
+          <td>{{ r.attendance_date }}</td>
+          <td><span class="badge badge-{{ r.status.lower() }}">{{ r.status.replace('_',' ') }}</span></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% elif selected %}
+    <div class="empty"><div class="empty-ico">◧</div><p>No attendance records found for this course.</p></div>
+    {% else %}
+    <div class="empty"><div class="empty-ico">◧</div><p>Select a course to view detailed attendance records.</p></div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
