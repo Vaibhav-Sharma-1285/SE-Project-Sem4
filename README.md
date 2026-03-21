@@ -52,6 +52,7 @@ Then open your browser and go to: **http://localhost:5000**
 | Role    | Username       | Password      |
 |---------|----------------|---------------|
 | Admin   | `admin`        | `Admin@1234`  |
+| Faculty | `abc`      | `Faculty@123` |
 | Faculty | `atharva`      | `Faculty@123` |
 | Faculty | `asheesh`      | `Faculty@123` |
 | Faculty | `roshan`      | `Faculty@123` |
