@@ -53,7 +53,6 @@ Then open your browser and go to: **http://localhost:5000**
 |---------|----------------|---------------|
 | Admin   | `admin`        | `Admin@1234`  |
 | Faculty | `atharva`      | `Faculty@123` |
-| Faculty | `vaibhav`      | `Faculty@123` |
 | Faculty | `asheesh`      | `Faculty@123` |
 | Faculty | `roshan`      | `Faculty@123` |
 | Faculty | `saurabh`      | `Faculty@123` |
