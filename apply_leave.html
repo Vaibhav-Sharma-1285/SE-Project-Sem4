@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}Apply for Leave{% endblock %}
+{% block page_title %}Apply for Leave{% endblock %}
+{% block content %}
+<div style="max-width:600px;margin:0 auto">
+  <div class="card">
+    <div class="card-header"><span class="card-title">Leave Application Form</span></div>
+    <form method="POST">
+      <div class="form-group">
+        <label>Course <span class="req">*</span></label>
+        <select name="course_id" required>
+          <option value="">— Select Course —</option>
+          {% for c in courses %}
+          <option value="{{ c.course_id }}">{{ c.course_code }} — {{ c.course_name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label>From Date <span class="req">*</span></label>
+          <input type="date" name="from_date" required>
+        </div>
+        <div class="form-group">
+          <label>To Date <span class="req">*</span></label>
+          <input type="date" name="to_date" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Reason for Leave <span class="req">*</span></label>
+        <textarea name="reason" placeholder="Provide a detailed reason (minimum 10 characters)..." rows="5" required></textarea>
+        <div class="text-muted mt-1">Minimum 10 characters required.</div>
+      </div>
+      <div class="flex gap-2 justify-between align-center mt-3">
+        <a href="{{ url_for('my_leaves') }}" class="btn btn-ghost">View My Applications</a>
+        <button type="submit" class="btn btn-primary">Submit Application →</button>
+      </div>
+    </form>
+  </div>
+  <div class="card mt-3">
+    <div class="card-header"><span class="card-title">Important Notes</span></div>
+    <ul style="color:var(--text2);font-size:.85rem;line-height:1.8;padding-left:20px">
+      <li>Leave applications cannot be withdrawn after submission.</li>
+      <li>Approved leaves are automatically reflected in your attendance percentage.</li>
+      <li>The reviewing faculty member may add comments to their decision.</li>
+      <li>Approved leave days are excluded from the attendance percentage calculation.</li>
+    </ul>
+  </div>
+</div>
+{% endblock %}
