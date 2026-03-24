@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block title %}Attendance Reports{% endblock %}
+{% block page_title %}Attendance Reports{% endblock %}
+{% block content %}
+<div class="grid-2" style="align-items:start">
+  <div class="card" style="position:sticky;top:0">
+    <div class="card-header"><span class="card-title">Report Filters</span></div>
+    <form method="GET">
+      <div class="form-group">
+        <label>Course <span class="req">*</span></label>
+        <select name="course_id" required>
+          <option value="">— Select Course —</option>
+          {% for c in courses %}
+          <option value="{{ c.course_id }}" {% if course_id == c.course_id|string %}selected{% endif %}>
+            {{ c.course_code }} — {{ c.course_name }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>From Date</label>
+        <input type="date" name="from_date" value="{{ from_date }}">
+      </div>
+      <div class="form-group">
+        <label>To Date</label>
+        <input type="date" name="to_date" value="{{ to_date }}">
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;margin-bottom:10px">Generate Report →</button>
+      {% if report_data %}
+      <a href="{{ url_for('export_report', course_id=course_id, from_date=from_date, to_date=to_date) }}"
+         class="btn btn-ghost" style="width:100%;justify-content:center">↓ Export as CSV</a>
+      {% endif %}
+    </form>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Report Results</span>
+      {% if report_data %}
+      <span class="text-muted">{{ report_data|length }} students</span>
+      {% endif %}
+    </div>
+    {% if report_data %}
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Roll No</th><th>Student</th><th>Held</th><th>Attended</th><th>Leave</th><th>Attendance %</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for r in report_data %}
+        <tr>
+          <td><code style="font-size:.75rem;background:var(--bg3);padding:2px 6px;border-radius:4px;color:var(--accent)">{{ r.roll_no }}</code></td>
+          <td><strong>{{ r.full_name }}</strong></td>
+          <td>{{ r.held }}</td>
+          <td>{{ r.attended }}</td>
+          <td>{{ r.on_leave }}</td>
+          <td>
+            {% if r.pct is none %}
+            <span class="text-muted">N/A</span>
+            {% elif r.pct < 66.67 %}
+            <span class="pct-low">{{ r.pct }}%</span>
+            {% else %}
+            <span class="pct-ok">{{ r.pct }}%</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% elif course_id %}
+    <div class="empty"><div class="empty-ico">◧</div><p>No data available.</p></div>
+    {% else %}
+    <div class="empty"><div class="empty-ico">◧</div><p>Select filters to generate a report.</p></div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
