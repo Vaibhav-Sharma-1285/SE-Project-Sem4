@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Course Management{% endblock %}
+{% block page_title %}Course Management{% endblock %}
+{% block content %}
+<div class="flex justify-between align-center mb-4">
+  <span class="text-muted">{{ courses|length }} course(s) total</span>
+  <a href="{{ url_for('create_course') }}" class="btn btn-primary">+ New Course</a>
+</div>
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Code</th><th>Course Name</th><th>Credits</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+      {% for c in courses %}
+      <tr>
+        <td><code class="tag">{{ c.course_code }}</code></td>
+        <td><strong>{{ c.course_name }}</strong></td>
+        <td>{{ c.credits }}</td>
+        <td>
+          <div class="flex gap-2">
+            <a href="{{ url_for('edit_course', course_id=c.course_id) }}" class="btn btn-ghost btn-xs">Edit</a>
+            <a href="{{ url_for('enroll_students', course_id=c.course_id) }}" class="btn btn-primary btn-xs">Enrollment</a>
+            <form method="POST" action="{{ url_for('delete_course', course_id=c.course_id) }}" style="display:inline"
+                  onsubmit="return confirm('Delete course {{ c.course_name }}? This cannot be undone.')">
+              <button type="submit" class="btn btn-danger btn-xs">Delete</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if not courses %}
+  <div class="empty"><div class="empty-ico">📚</div><p>No courses created yet.</p></div>
+  {% endif %}
+</div>
+<div class="card mt-3" style="background:var(--yellow-light);border-color:#fde68a">
+  <div style="font-size:.82rem;color:var(--yellow);display:flex;gap:8px;align-items:flex-start">
+    <span>⚠️</span>
+    <span><strong>Note (REQ-8.9):</strong> Courses that have existing attendance records cannot be deleted. You will see an error message if you attempt to do so.</span>
+  </div>
+</div>
+{% endblock %}
