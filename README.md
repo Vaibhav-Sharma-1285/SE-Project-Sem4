@@ -52,12 +52,16 @@ Then open your browser and go to: **http://localhost:5000**
 | Role    | Username       | Password      |
 |---------|----------------|---------------|
 | Admin   | `admin`        | `Admin@1234`  |
-| Faculty | `abc`      | `Faculty@123` |
-| Faculty | `atharva`      | `Faculty@123` |
-| Faculty | `asheesh`      | `Faculty@123` |
-| Faculty | `roshan`      | `Faculty@123` |
-| Faculty | `saurabh`      | `Faculty@123` |
-| Student | `s001` to `s005` | `Student@123` |
+| Faculty | `prof1`      | `Prof@1234` |
+| Faculty | `prof2`      | `Prof@1234` |
+| Faculty | `prof3`      | `Prof@1234` |
+| Faculty | `prof4`      | `Prof@1234` |
+| Faculty | `prof5`      | `Prof@1234` |
+| Student | `vaibhav` | `Student@1234` |
+| Student | `atharva` | `Student@1234` |
+| Student | `asheesh` | `Student@1234` |
+| Student | `roshan` | `Student@1234` |
+| Student | `saurabh` | `Student@1234` |
 
 ---
 
