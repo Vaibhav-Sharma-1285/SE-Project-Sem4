@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% block title %}Manage Enrollment{% endblock %}
+{% block page_title %}Manage Enrollment — {{ course.course_name }}{% endblock %}
+{% block content %}
+<div class="mb-3">
+  <a href="{{ url_for('admin_courses') }}" class="btn btn-ghost btn-sm">← Back to Courses</a>
+</div>
+
+<div class="grid-2" style="align-items:start">
+  <!-- LEFT: Faculty Assignment -->
+  <div>
+    <div class="card mb-4">
+      <div class="card-header"><span class="card-title">Assigned Faculty</span></div>
+      {% set assigned = [] %}
+      {% for f in faculty_list %}
+        {% if f.user_id in assigned_ids %}
+          {% set _ = assigned.append(f) %}
+        {% endif %}
+      {% endfor %}
+      {% if assigned %}
+      <div class="table-wrap mb-3">
+        <table>
+          <thead><tr><th>Faculty</th><th>Action</th></tr></thead>
+          <tbody>
+          {% for f in faculty_list %}
+          {% if f.user_id in assigned_ids %}
+          <tr>
+            <td><strong>{{ f.full_name }}</strong><br><span class="text-muted">{{ f.email }}</span></td>
+            <td>
+              <form method="POST">
+                <input type="hidden" name="action" value="unassign_faculty">
+                <input type="hidden" name="faculty_id" value="{{ f.user_id }}">
+                <button type="submit" class="btn btn-danger btn-xs">Remove</button>
+              </form>
+            </td>
+          </tr>
+          {% endif %}
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty" style="padding:24px"><div class="empty-ico" style="font-size:2rem">◉</div><p>No faculty assigned yet.</p></div>
+      {% endif %}
+      <form method="POST" class="flex gap-2 mt-2">
+        <input type="hidden" name="action" value="assign_faculty">
+        <select name="faculty_id" style="flex:1" required>
+          <option value="">— Assign faculty —</option>
+          {% for f in faculty_list %}
+          {% if f.user_id not in assigned_ids %}
+          <option value="{{ f.user_id }}">{{ f.full_name }}</option>
+          {% endif %}
+          {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-primary btn-sm">Assign</button>
+      </form>
+    </div>
+
+    <!-- Currently enrolled students -->
+    <div class="card">
+      <div class="card-header"><span class="card-title">Enrolled Students ({{ enrolled|length }})</span></div>
+      {% if enrolled %}
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Roll No</th><th>Name</th><th>Action</th></tr></thead>
+          <tbody>
+          {% for s in enrolled %}
+          <tr>
+            <td><code style="font-size:.75rem;background:var(--bg3);padding:2px 6px;border-radius:4px;color:var(--accent)">{{ s.username }}</code></td>
+            <td>{{ s.full_name }}</td>
+            <td>
+              <form method="POST">
+                <input type="hidden" name="action" value="unenroll">
+                <input type="hidden" name="student_id" value="{{ s.user_id }}">
+                <button type="submit" class="btn btn-danger btn-xs" onclick="return confirm('Remove this student?')">Remove</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty" style="padding:24px"><div class="empty-ico" style="font-size:2rem">◈</div><p>No students enrolled yet.</p></div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- RIGHT: Enroll new students -->
+  <div class="card">
+    <div class="card-header"><span class="card-title">Enroll Students</span></div>
+    <form method="POST">
+      <input type="hidden" name="action" value="enroll">
+      <div class="form-group">
+        <label>Semester <span class="req">*</span></label>
+        <input type="number" name="semester" value="4" min="1" max="8" required>
+      </div>
+      <div class="form-group">
+        <label>Select Students <span class="req">*</span></label>
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px;max-height:420px;overflow-y:auto">
+          {% set unenrolled_count = namespace(n=0) %}
+          {% for s in all_students %}
+          {% if s.user_id not in enrolled_ids %}
+          {% set unenrolled_count.n = unenrolled_count.n + 1 %}
+          <label style="display:flex;align-items:center;gap:8px;padding:8px;border-radius:6px;cursor:pointer;transition:background .15s" onmouseover="this.style.background='rgba(79,124,255,.08)'" onmouseout="this.style.background=''">
+            <input type="checkbox" name="student_ids" value="{{ s.user_id }}" style="width:auto;accent-color:var(--accent)">
+            <div>
+              <div style="font-size:.875rem;font-weight:500">{{ s.full_name }}</div>
+              <div class="text-muted" style="font-size:.75rem">{{ s.username }}</div>
+            </div>
+          </label>
+          {% endif %}
+          {% endfor %}
+          {% if unenrolled_count.n == 0 %}
+          <div class="empty" style="padding:16px"><p>All students are already enrolled.</p></div>
+          {% endif %}
+        </div>
+      </div>
+      <div class="flex gap-2 mt-3">
+        <button type="button" onclick="document.querySelectorAll('input[name=student_ids]').forEach(c=>c.checked=true)" class="btn btn-ghost btn-sm">Select All</button>
+        <button type="button" onclick="document.querySelectorAll('input[name=student_ids]').forEach(c=>c.checked=false)" class="btn btn-ghost btn-sm">Clear</button>
+        <button type="submit" class="btn btn-primary btn-sm" style="margin-left:auto">Enroll Selected →</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

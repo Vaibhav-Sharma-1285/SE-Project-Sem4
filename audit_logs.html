@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Audit Logs{% endblock %}
+{% block page_title %}Audit Logs{% endblock %}
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <span class="card-title">System Audit Trail</span>
+    <span class="text-muted">Last 200 events</span>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Time</th><th>User</th><th>Action</th><th>Details</th><th>IP Address</th></tr>
+      </thead>
+      <tbody>
+      {% for log in logs %}
+      <tr>
+        <td class="text-muted" style="white-space:nowrap">{{ log.timestamp[:16] }}</td>
+        <td>{{ log.full_name or '<span style="color:var(--text3)">—</span>' }}</td>
+        <td>
+          <code style="font-size:.72rem;background:{% if 'FAIL' in log.action or 'DEAC' in log.action %}rgba(255,77,106,.1){% elif 'LOGIN' == log.action %}rgba(0,208,132,.1){% else %}rgba(79,124,255,.1){% endif %};
+          color:{% if 'FAIL' in log.action %}var(--red){% elif 'LOGIN' == log.action %}var(--green){% else %}var(--accent){% endif %};
+          padding:2px 7px;border-radius:4px">{{ log.action }}</code>
+        </td>
+        <td style="font-size:.8rem;color:var(--text2)">{{ log.details or '—' }}</td>
+        <td class="text-muted" style="font-size:.78rem">{{ log.ip_address }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if not logs %}
+  <div class="empty"><div class="empty-ico">◐</div><p>No audit events recorded yet.</p></div>
+  {% endif %}
+</div>
+{% endblock %}
