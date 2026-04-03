@@ -3,6 +3,13 @@
 
 ---
 
+## 🌐 Live Demo
+**Deployed at:** [https://attendify-ifzb.onrender.com/](https://attendify-ifzb.onrender.com/)
+
+> Hosted on Render — accessible from any browser, no installation required.
+
+---
+
 ## 📋 Project Overview
 Attendify is a web-based attendance management and leave approval platform built for college environments, replacing manual paper-based processes with a secure, role-driven digital solution.
 
@@ -10,16 +17,16 @@ Attendify is a web-based attendance management and leave approval platform built
 
 ---
 
-## ⚡ Quick Start (Run in 3 Steps)
+## ⚡ Quick Start (Run Locally in 3 Steps)
 
 ### Step 1 — Prerequisites
 Make sure you have Python 3.8+ installed:
 ```bash
-python3 --version
+python --version
 ```
 Install Flask (the only dependency):
 ```bash
-pip3 install flask
+pip install flask
 ```
 > **Note:** Flask includes Werkzeug for password hashing. No other packages needed.
 
@@ -28,20 +35,20 @@ pip3 install flask
 ### Step 2 — Initialize the Database
 Run the setup script once to create the database with sample data:
 ```bash
-python3 setup.py
+python setup.py
 ```
 This creates:
 - 1 Admin account
-- 2 Faculty accounts  
+- 5 Faculty accounts
 - 5 Student accounts
-- 4 Courses with enrollments
-- 14 days of sample attendance data
+- 5 Courses with enrollments
+- Attendance data from 1 January 2026 to 27 March 2026
 
 ---
 
 ### Step 3 — Start the Application
 ```bash
-python3 app.py
+python app.py
 ```
 Then open your browser and go to: **http://localhost:5000**
 
@@ -49,19 +56,19 @@ Then open your browser and go to: **http://localhost:5000**
 
 ## 🔐 Login Credentials
 
-| Role    | Username       | Password      |
-|---------|----------------|---------------|
-| Admin   | `admin`        | `Admin@1234`  |
-| Faculty | `prof1`      | `Prof@1234` |
-| Faculty | `prof2`      | `Prof@1234` |
-| Faculty | `prof3`      | `Prof@1234` |
-| Faculty | `prof4`      | `Prof@1234` |
-| Faculty | `prof5`      | `Prof@1234` |
-| Student | `vaibhav` | `Student@1234` |
-| Student | `atharva` | `Student@1234` |
-| Student | `asheesh` | `Student@1234` |
-| Student | `roshan` | `Student@1234` |
-| Student | `saurabh` | `Student@1234` |
+| Role    | Username  | Password       | Name / Subject |
+|---------|-----------|----------------|----------------|
+| Admin   | `admin`   | `Admin@1234`   | System Administrator |
+| Faculty | `prof1`   | `Prof@1234`    | Professor 1 → Software Engineering |
+| Faculty | `prof2`   | `Prof@1234`    | Professor 2 → Operating System |
+| Faculty | `prof3`   | `Prof@1234`    | Professor 3 → Computer System Architecture |
+| Faculty | `prof4`   | `Prof@1234`    | Professor 4 → Fundamental of Data Analytics |
+| Faculty | `prof5`   | `Prof@1234`    | Professor 5 → Cryptography Essentials |
+| Student | `vaibhav` | `Student@1234` | Vaibhav Sharma |
+| Student | `atharva` | `Student@1234` | Atharva Verma |
+| Student | `asheesh` | `Student@1234` | Asheesh Kumar |
+| Student | `roshan`  | `Student@1234` | Roshan Verma |
+| Student | `saurabh` | `Student@1234` | Saurabh Kumar |
 
 ---
 
@@ -69,30 +76,30 @@ Then open your browser and go to: **http://localhost:5000**
 
 ```
 attendify/
-├── app.py              ← Main Flask application (all routes & logic)
+├── app.py              ← Main Flask application (all routes & backend logic)
 ├── setup.py            ← Database initialization script (run once)
 ├── schema.sql          ← SQLite database schema
 ├── README.md           ← This file
 ├── instance/
 │   └── attendify.db    ← SQLite database (auto-created by setup.py)
 └── templates/
-    ├── base.html           ← Master layout with sidebar & navigation
-    ├── login.html          ← Login page
-    ├── dashboard.html      ← Role-specific dashboard
-    ├── mark_attendance.html   ← Faculty: mark attendance
-    ├── view_attendance.html   ← Student: view own attendance
-    ├── apply_leave.html       ← Student: apply for leave
-    ├── my_leaves.html         ← Student: leave application history
-    ├── manage_leaves.html     ← Faculty: approve/reject leaves
-    ├── reports.html           ← Attendance reports + CSV export
-    ├── admin_users.html       ← Admin: user list & search
-    ├── create_user.html       ← Admin: create new user
-    ├── edit_user.html         ← Admin: edit user details
-    ├── admin_courses.html     ← Admin: course management
-    ├── create_course.html     ← Admin: create new course
-    ├── edit_course.html       ← Admin: edit course
-    ├── enroll_students.html   ← Admin: manage enrollments & faculty
-    └── audit_logs.html        ← Admin: system audit trail
+    ├── base.html               ← Master layout with sidebar & navigation
+    ├── login.html              ← Login page
+    ├── dashboard.html          ← Role-specific dashboard
+    ├── mark_attendance.html    ← Faculty: mark attendance
+    ├── view_attendance.html    ← Student: view own attendance
+    ├── apply_leave.html        ← Student: apply for leave
+    ├── my_leaves.html          ← Student: leave application history
+    ├── manage_leaves.html      ← Faculty: approve/reject leaves
+    ├── reports.html            ← Attendance reports + CSV export
+    ├── admin_users.html        ← Admin: user list & search
+    ├── create_user.html        ← Admin: create new user
+    ├── edit_user.html          ← Admin: edit user details
+    ├── admin_courses.html      ← Admin: course management
+    ├── create_course.html      ← Admin: create new course
+    ├── edit_course.html        ← Admin: edit course
+    ├── enroll_students.html    ← Admin: manage enrollments & faculty
+    └── audit_logs.html         ← Admin: system audit trail
 ```
 
 ---
@@ -139,31 +146,50 @@ attendify/
 ```
 Browser (HTML/CSS/JS)
     ↕ HTTP
-Flask Application Server (Python)
+Flask Application Server — app.py
     ├── RBAC Middleware
     ├── Business Logic (attendance %, leave workflow)
     └── Parameterized DB queries
     ↕ SQLite
-attendify.db (6 tables: users, courses, faculty_courses, enrollments, attendance_records, leave_requests, audit_logs)
+attendify.db (7 tables: users, courses, faculty_courses, enrollments,
+              attendance_records, leave_requests, audit_logs)
 ```
 
-**Design Pattern:** MVC (Model-View-Controller)  
-**Database:** SQLite (normalized to 3NF)  
+**Design Pattern:** MVC (Model-View-Controller)
+**Database:** SQLite (normalized to 3NF)
 **Security:** PBKDF2 password hashing, session tokens, RBAC, audit logging
+**Deployment:** Render (https://attendify-ifzb.onrender.com/)
 
 ---
 
 ## 🔄 Re-initialize Database
 To start fresh with clean sample data:
 ```bash
-python3 setup.py
+python setup.py
 ```
 
 ---
 
 ## 📌 Notes for Evaluators
+- **Live URL:** [https://attendify-ifzb.onrender.com/](https://attendify-ifzb.onrender.com/)
 - The attendance percentage formula is: `(Attended ÷ (Held − OnLeave)) × 100`
 - Attendance below 66.67% is highlighted in red on all views
 - All admin actions and authentication events are logged in the audit trail
 - CSV export is available for all attendance reports
 - The system uses SQLite (file-based, no server setup required) for easy evaluation
+
+---
+
+## 👨‍💻 Team Contributions
+
+| Member | Area |
+|--------|------|
+| Atharva | Project Lead, Backend Architecture, Authentication |
+| Vaibhav | Dashboard UI, Attendance Marking Interface, Deployment |
+| Asheesh | Leave Management System (Apply & Approve) |
+| Roshan | Reports, CSV Export, User Management UI |
+| Saurabh | Course Management, Enrollment, Audit Logs |
+
+---
+
+*B.Tech Software Engineering Lab | Section CSE-A | Semester IV | Academic Year 2025–26*
