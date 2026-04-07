@@ -4,9 +4,11 @@
 ---
 
 ## 🌐 Live Demo
-**Deployed at:** [https://attendify-ifzb.onrender.com/](https://attendify-ifzb.onrender.com/)
+**Primary Link:** [https://web-production-084fc.up.railway.app](https://web-production-084fc.up.railway.app)
 
-> Hosted on Render — accessible from any browser, no installation required.
+**Alternate Link:** [https://attendify-ifzb.onrender.com/](https://attendify-ifzb.onrender.com/)
+
+> Hosted on Railway — accessible from any browser, no installation required.
 
 ---
 
@@ -158,7 +160,7 @@ attendify.db (7 tables: users, courses, faculty_courses, enrollments,
 **Design Pattern:** MVC (Model-View-Controller)
 **Database:** SQLite (normalized to 3NF)
 **Security:** PBKDF2 password hashing, session tokens, RBAC, audit logging
-**Deployment:** Render (https://attendify-ifzb.onrender.com/)
+**Deployment:** Railway (https://web-production-084fc.up.railway.app)
 
 ---
 
@@ -171,7 +173,8 @@ python setup.py
 ---
 
 ## 📌 Notes for Evaluators
-- **Live URL:** [https://attendify-ifzb.onrender.com/](https://attendify-ifzb.onrender.com/)
+- **Primary URL:** [https://web-production-084fc.up.railway.app](https://web-production-084fc.up.railway.app)
+- **Alternate URL:** [https://attendify-ifzb.onrender.com/](https://attendify-ifzb.onrender.com/)
 - The attendance percentage formula is: `(Attended ÷ (Held − OnLeave)) × 100`
 - Attendance below 66.67% is highlighted in red on all views
 - All admin actions and authentication events are logged in the audit trail
